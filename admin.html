@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>راوی | پنل مدیریت منو</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Arabic:wght@500;600;700&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F4E9;
+    --cream-deep:#E3E3C9;
+    --terracotta:#A0554B;
+    --terracotta-deep:#8A473E;
+    --teal:#6E8286;
+    --sage:#95B4A0;
+    --ink:#3A2E28;
+    --hairline:rgba(58,46,40,0.16);
+    --danger:#B04030;
+    --ok:#4C7A5A;
+  }
+  html{ color-scheme:light only; }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background:var(--cream-deep);
+    color:var(--ink);
+    font-family:'Vazirmatn',sans-serif;
+    min-height:100vh;
+    padding-bottom:110px;
+  }
+  h1,h2,h3{ font-family:'Noto Serif Arabic',serif; color:var(--terracotta-deep); }
+
+  /* ===== top bar ===== */
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    background:rgba(247,244,233,0.97);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--hairline);
+    padding:14px 18px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .topbar h1{ font-size:1.15rem; display:flex; align-items:center; gap:8px; }
+  .topbar h1 svg{ width:16px; height:16px; }
+  .topbar h1 svg path{ fill:var(--terracotta); }
+  .topbar .sub{ font-size:0.7rem; color:var(--teal); letter-spacing:1px; display:block; font-family:'Vazirmatn'; font-weight:400; }
+
+  /* ===== buttons ===== */
+  button{
+    font-family:'Vazirmatn',sans-serif;
+    border:none; cursor:pointer; border-radius:12px;
+    font-size:0.9rem; font-weight:500;
+    transition:opacity .2s ease, transform .1s ease;
+  }
+  button:active{ transform:scale(0.98); }
+  button:disabled{ opacity:0.45; cursor:default; }
+  .btn-primary{ background:var(--terracotta); color:#fff; padding:12px 22px; }
+  .btn-ghost{ background:transparent; color:var(--teal); padding:10px 14px; border:1px solid var(--hairline); }
+  .btn-danger-ghost{ background:transparent; color:var(--danger); padding:8px 12px; border:1px solid rgba(176,64,48,0.3); font-size:0.8rem; }
+  .btn-small{ padding:8px 12px; font-size:0.8rem; }
+  .btn-icon{
+    background:#fff; border:1px solid var(--hairline);
+    width:34px; height:34px; border-radius:10px;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:0.95rem; color:var(--ink);
+  }
+
+  .wrap{ max-width:680px; margin:0 auto; padding:18px; }
+
+  /* ===== cards ===== */
+  .card{
+    background:var(--cream);
+    border:1px solid var(--hairline);
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow:0 8px 20px rgba(36,26,21,0.06);
+  }
+  .card h2{ font-size:1.05rem; margin-bottom:14px; }
+  .hint{ font-size:0.78rem; color:var(--teal); line-height:1.9; }
+
+  label{ display:block; font-size:0.82rem; font-weight:600; margin:12px 0 6px; }
+  input[type=text], input[type=password]{
+    width:100%; padding:12px 14px;
+    border:1px solid var(--hairline); border-radius:12px;
+    background:#fff; color:var(--ink);
+    font-family:'Vazirmatn'; font-size:0.95rem;
+  }
+  input:focus{ outline:2px solid var(--sage); }
+  input[dir=ltr]{ direction:ltr; text-align:left; }
+
+  /* ===== category block ===== */
+  .cat-block{
+    background:var(--cream);
+    border:1px solid var(--hairline);
+    border-radius:18px;
+    margin-bottom:14px;
+    overflow:hidden;
+    box-shadow:0 8px 20px rgba(36,26,21,0.05);
+  }
+  .cat-head{
+    display:flex; align-items:center; gap:10px;
+    padding:14px 16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .cat-head .cat-title{
+    flex:1;
+    font-family:'Noto Serif Arabic',serif;
+    font-weight:700; font-size:1.05rem;
+    color:var(--terracotta-deep);
+  }
+  .cat-head .count{
+    font-size:0.72rem; color:var(--teal);
+    background:#fff; border:1px solid var(--hairline);
+    padding:3px 10px; border-radius:20px;
+    white-space:nowrap;
+  }
+  .cat-head .chev{ transition:transform .25s ease; color:var(--teal); font-size:0.8rem; }
+  .cat-block.open .cat-head .chev{ transform:rotate(90deg); }
+  .cat-body{ display:none; border-top:1px solid var(--hairline); padding:14px 16px; }
+  .cat-block.open .cat-body{ display:block; }
+  .cat-actions{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+
+  /* ===== item row ===== */
+  .item-row{
+    display:flex; align-items:center; gap:12px;
+    background:#fff;
+    border:1px solid var(--hairline);
+    border-radius:14px;
+    padding:10px;
+    margin-bottom:10px;
+  }
+  .item-thumb{
+    width:56px; height:72px; border-radius:10px;
+    object-fit:cover; background:var(--cream-deep);
+    flex-shrink:0;
+  }
+  .item-meta{ flex:1; min-width:0; }
+  .item-meta .nm{ font-weight:600; font-size:0.92rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .item-meta .pr{ font-size:0.8rem; color:var(--teal); margin-top:4px; }
+  .item-btns{ display:flex; flex-direction:column; gap:6px; }
+  .row-h{ display:flex; gap:6px; }
+
+  /* ===== editor modal ===== */
+  .modal-veil{
+    position:fixed; inset:0; z-index:40;
+    background:rgba(58,46,40,0.45);
+    display:none;
+    align-items:flex-end; justify-content:center;
+  }
+  .modal-veil.show{ display:flex; }
+  .modal{
+    background:var(--cream);
+    width:100%; max-width:560px;
+    border-radius:22px 22px 0 0;
+    padding:22px 20px 30px;
+    max-height:92vh; overflow-y:auto;
+  }
+  @media(min-width:600px){
+    .modal-veil.show{ align-items:center; }
+    .modal{ border-radius:22px; }
+  }
+  .modal h2{ font-size:1.1rem; margin-bottom:6px; }
+  .img-pick{
+    margin-top:8px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .img-pick img{
+    width:88px; height:114px; border-radius:12px;
+    object-fit:cover; background:var(--cream-deep);
+    border:1px solid var(--hairline);
+  }
+  .modal-actions{ display:flex; gap:10px; margin-top:22px; }
+  .modal-actions .btn-primary{ flex:1; }
+
+  /* ===== save bar ===== */
+  .savebar{
+    position:fixed; bottom:0; right:0; left:0; z-index:30;
+    background:rgba(247,244,233,0.97);
+    backdrop-filter:blur(6px);
+    border-top:1px solid var(--hairline);
+    padding:14px 18px calc(14px + env(safe-area-inset-bottom));
+    display:flex; align-items:center; gap:12px;
+  }
+  .savebar .btn-primary{ flex:1; font-size:1rem; padding:14px; }
+  .dirty-dot{
+    width:10px; height:10px; border-radius:50%;
+    background:var(--sage); flex-shrink:0;
+    transition:background .3s ease;
+  }
+  .dirty-dot.dirty{ background:var(--terracotta); }
+  .savebar .state{ font-size:0.75rem; color:var(--teal); white-space:nowrap; }
+
+  /* ===== toast ===== */
+  .toast{
+    position:fixed; bottom:96px; right:50%; transform:translateX(50%);
+    z-index:60;
+    background:var(--ink); color:var(--cream);
+    padding:12px 20px; border-radius:14px;
+    font-size:0.85rem;
+    opacity:0; pointer-events:none;
+    transition:opacity .3s ease;
+    max-width:88vw; text-align:center; line-height:1.8;
+  }
+  .toast.show{ opacity:1; }
+  .toast.ok{ background:var(--ok); }
+  .toast.err{ background:var(--danger); }
+
+  /* ===== busy overlay ===== */
+  .busy{
+    position:fixed; inset:0; z-index:70;
+    background:rgba(247,244,233,0.85);
+    display:none;
+    flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    font-family:'Noto Serif Arabic',serif; font-weight:600;
+    color:var(--terracotta-deep);
+  }
+  .busy.show{ display:flex; }
+  @keyframes breathe{ 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.35);opacity:1} }
+  .busy svg{ width:20px; height:20px; animation:breathe 1.3s ease-in-out infinite; }
+  .busy svg path{ fill:var(--terracotta); }
+
+  .screen{ display:none; }
+  .screen.on{ display:block; }
+  .site-link{ font-size:0.8rem; color:var(--teal); word-break:break-all; direction:ltr; text-align:left; display:block; margin-top:6px; }
+  ol.steps{ padding-right:18px; font-size:0.82rem; color:var(--ink); line-height:2.1; }
+  ol.steps b{ color:var(--terracotta-deep); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C9 8 5 11 5 15.5A7 7 0 0 0 19 15.5C19 11 15 8 12 2Z"/></svg>
+    <span>پنل مدیریت راوی<span class="sub" id="topSub">منوی کافه</span></span>
+  </h1>
+  <button class="btn-ghost btn-small" id="btnSettingsTop" style="display:none">اتصال</button>
+</div>
+
+<!-- ================= SETUP SCREEN ================= -->
+<div class="screen wrap" id="scrSetup">
+  <div class="card">
+    <h2>اتصال به گیت‌هاب</h2>
+    <p class="hint">این اطلاعات فقط روی همین گوشی/کامپیوتر ذخیره می‌شود و برای هیچ‌کس فرستاده نمی‌شود. راهنمای کامل ساخت کلید در فایل «راهنما» هست.</p>
+
+    <label>نام کاربری گیت‌هاب (Username)</label>
+    <input type="text" id="inpOwner" dir="ltr" placeholder="e.g. abolfazl-ravi" autocomplete="off">
+
+    <label>نام مخزن (Repository)</label>
+    <input type="text" id="inpRepo" dir="ltr" placeholder="e.g. ravi-menu" autocomplete="off">
+
+    <label>کلید دسترسی (Token)</label>
+    <input type="password" id="inpToken" dir="ltr" placeholder="github_pat_..." autocomplete="off">
+
+    <div style="margin-top:20px; display:flex; gap:10px;">
+      <button class="btn-primary" id="btnConnect" style="flex:1">اتصال و ورود</button>
+    </div>
+    <p class="hint" id="setupMsg" style="margin-top:12px;"></p>
+  </div>
+</div>
+
+<!-- ================= MAIN SCREEN ================= -->
+<div class="screen wrap" id="scrMain">
+
+  <div class="card" id="cardBrand">
+    <h2 style="cursor:pointer" id="brandToggle">تنظیمات برند <span style="font-size:0.7rem;color:var(--teal)">(برای باز/بسته شدن لمس کن)</span></h2>
+    <div id="brandBody" style="display:none">
+      <label>نام برند</label>
+      <input type="text" id="setBrand">
+      <label>شعار (زیر لوگو)</label>
+      <input type="text" id="setTagline">
+      <label>متن پایین صفحه</label>
+      <input type="text" id="setFooter" dir="ltr">
+      <label>واحد پول</label>
+      <input type="text" id="setCurrency">
+    </div>
+  </div>
+
+  <div id="catList"></div>
+
+  <button class="btn-ghost" id="btnAddCat" style="width:100%; padding:16px; border-style:dashed; font-size:0.95rem;">＋ افزودن دسته جدید</button>
+
+  <div class="card" style="margin-top:16px">
+    <p class="hint">آدرس سایت منو:</p>
+    <a class="site-link" id="siteLink" target="_blank" rel="noopener"></a>
+    <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap">
+      <button class="btn-ghost btn-small" id="btnReload">↻ بارگذاری مجدد از سایت</button>
+      <button class="btn-danger-ghost" id="btnLogout">خروج و پاک‌کردن اتصال</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SAVE BAR ================= -->
+<div class="savebar" id="saveBar" style="display:none">
+  <div class="dirty-dot" id="dirtyDot"></div>
+  <span class="state" id="saveState">بدون تغییر</span>
+  <button class="btn-primary" id="btnSave" disabled>ذخیره و انتشار</button>
+</div>
+
+<!-- ================= ITEM EDITOR ================= -->
+<div class="modal-veil" id="itemModal">
+  <div class="modal">
+    <h2 id="itemModalTitle">ویرایش آیتم</h2>
+    <p class="hint" id="itemModalCat"></p>
+
+    <label>نام آیتم</label>
+    <input type="text" id="edName" placeholder="مثلاً: آیس لته">
+
+    <label>قیمت (تومان)</label>
+    <input type="text" id="edPrice" inputmode="numeric" dir="ltr" placeholder="200000">
+    <p class="hint" id="edPricePreview"></p>
+
+    <label>عکس آیتم</label>
+    <div class="img-pick">
+      <img id="edImg" alt="">
+      <div>
+        <button class="btn-ghost btn-small" id="btnPickImg">انتخاب عکس جدید</button>
+        <p class="hint" style="margin-top:8px">عکس به‌صورت خودکار فشرده و بهینه می‌شود.</p>
+      </div>
+      <input type="file" id="fileImg" accept="image/*" style="display:none">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" id="btnItemOk">تأیید</button>
+      <button class="btn-ghost" id="btnItemCancel">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CATEGORY EDITOR ================= -->
+<div class="modal-veil" id="catModal">
+  <div class="modal">
+    <h2 id="catModalTitle">دسته جدید</h2>
+    <label>نام دسته</label>
+    <input type="text" id="edCatName" placeholder="مثلاً: قهوه گرم">
+    <div class="modal-actions">
+      <button class="btn-primary" id="btnCatOk">تأیید</button>
+      <button class="btn-ghost" id="btnCatCancel">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="busy" id="busy">
+  <svg viewBox="0 0 24 24"><path d="M12 2C9 8 5 11 5 15.5A7 7 0 0 0 19 15.5C19 11 15 8 12 2Z"/></svg>
+  <span id="busyText">در حال ذخیره...</span>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ============ helpers ============ */
+var $ = function(id){ return document.getElementById(id); };
+var faD = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+function toFa(s){ return String(s).replace(/[0-9]/g, function(d){ return faD[+d]; }); }
+function faToEn(s){
+  return String(s)
+    .replace(/[۰-۹]/g, function(d){ return String(faD.indexOf(d)); })
+    .replace(/[٠-٩]/g, function(d){ return String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)); });
+}
+function parsePrice(v){
+  var n = faToEn(v).replace(/[^0-9]/g,'');
+  return n ? parseInt(n,10) : 0;
+}
+function fmtPrice(n){ return toFa(Number(n||0).toLocaleString('en-US')); }
+function uid(prefix){ return prefix + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function b64EncodeUtf8(str){
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function b64DecodeUtf8(b64){
+  return decodeURIComponent(escape(atob(b64.replace(/\n/g,''))));
+}
+
+var toastTimer;
+function toast(msg, cls){
+  var t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (cls||'');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.className = 'toast'; }, 4200);
+}
+function busy(on, text){
+  $('busy').classList.toggle('show', !!on);
+  if(text) $('busyText').textContent = text;
+}
+
+/* ============ state ============ */
+var CFG_KEY = 'ravi_admin_cfg';
+var cfg = null;          /* {owner, repo, token, branch} */
+var data = null;         /* menu-data.json parsed */
+var dataSha = null;      /* current sha of menu-data.json */
+var pendingImages = {};  /* path -> {b64, preview} new images to upload */
+var dirty = false;
+
+function setDirty(v){
+  dirty = v;
+  $('dirtyDot').classList.toggle('dirty', v);
+  $('saveState').textContent = v ? 'تغییرات ذخیره‌نشده' : 'بدون تغییر';
+  $('btnSave').disabled = !v;
+}
+
+/* ============ GitHub API ============ */
+function api(path, opts){
+  opts = opts || {};
+  opts.headers = Object.assign({
+    'Authorization': 'Bearer ' + cfg.token,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  }, opts.headers || {});
+  return fetch('https://api.github.com' + path, opts).then(function(r){
+    if(r.status === 401) throw new Error('AUTH');
+    if(r.status === 404) throw new Error('NOTFOUND');
+    if(!r.ok) return r.json().catch(function(){return {};}).then(function(j){
+      throw new Error(j.message || ('HTTP ' + r.status));
+    });
+    return r.status === 204 ? null : r.json();
+  });
+}
+function repoPath(){ return '/repos/' + cfg.owner + '/' + cfg.repo + '/contents/'; }
+
+function loadData(){
+  busy(true, 'در حال دریافت منو...');
+  return api(repoPath() + 'menu-data.json?ref=' + (cfg.branch||'main') + '&t=' + Date.now())
+    .then(function(res){
+      dataSha = res.sha;
+      data = JSON.parse(b64DecodeUtf8(res.content));
+      pendingImages = {};
+      renderAll();
+      setDirty(false);
+      busy(false);
+    });
+}
+
+function putFile(path, b64content, message, sha){
+  var body = { message: message, content: b64content, branch: cfg.branch || 'main' };
+  if(sha) body.sha = sha;
+  return api(repoPath() + path, {
+    method: 'PUT',
+    body: JSON.stringify(body)
+  });
+}
+
+function saveAll(){
+  busy(true, 'در حال ذخیره...');
+  var imgPaths = Object.keys(pendingImages);
+  var chain = Promise.resolve();
+  imgPaths.forEach(function(p, i){
+    chain = chain.then(function(){
+      busy(true, 'آپلود عکس ' + toFa(i+1) + ' از ' + toFa(imgPaths.length) + '...');
+      return putFile(p, pendingImages[p].b64, 'آپلود عکس: ' + p);
+    });
+  });
+  chain.then(function(){
+    busy(true, 'ثبت منوی جدید...');
+    /* refetch sha to avoid conflicts */
+    return api(repoPath() + 'menu-data.json?ref=' + (cfg.branch||'main') + '&t=' + Date.now())
+      .then(function(res){ dataSha = res.sha; })
+      .catch(function(){ /* file may not exist yet */ });
+  }).then(function(){
+    var json = JSON.stringify(data, null, 2);
+    return putFile('menu-data.json', b64EncodeUtf8(json), 'به‌روزرسانی منو از پنل مدیریت', dataSha);
+  }).then(function(res){
+    dataSha = res && res.content ? res.content.sha : dataSha;
+    pendingImages = {};
+    setDirty(false);
+    busy(false);
+    toast('ذخیره شد ✓ تغییرات تا حدود یک دقیقه دیگر روی سایت دیده می‌شود', 'ok');
+  }).catch(function(err){
+    busy(false);
+    if(err.message === 'AUTH') toast('کلید دسترسی نامعتبر است. از بخش اتصال، کلید جدید وارد کن.', 'err');
+    else toast('خطا در ذخیره: ' + err.message, 'err');
+  });
+}
+
+/* ============ image compression ============ */
+function compressImage(file){
+  return new Promise(function(resolve, reject){
+    var reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = function(){
+      var img = new Image();
+      img.onerror = reject;
+      img.onload = function(){
+        var MAX = 900;
+        var w = img.width, h = img.height;
+        if(w > MAX || h > MAX){
+          if(w >= h){ h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        var c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        var dataUrl = c.toDataURL('image/jpeg', 0.82);
+        resolve({
+          b64: dataUrl.split(',')[1],
+          preview: dataUrl
+        });
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ============ preview src resolution ============ */
+function imgSrc(path){
+  if(pendingImages[path]) return pendingImages[path].preview;
+  if(!path) return '';
+  return 'https://raw.githubusercontent.com/' + cfg.owner + '/' + cfg.repo + '/' + (cfg.branch||'main') + '/' + path;
+}
+
+/* ============ rendering ============ */
+var openCats = {};
+
+function renderAll(){
+  var s = data.settings || (data.settings = {});
+  $('setBrand').value = s.brandName || '';
+  $('setTagline').value = s.tagline || '';
+  $('setFooter').value = s.footer || '';
+  $('setCurrency').value = s.currency || 'تومان';
+  $('siteLink').textContent = 'https://' + cfg.owner + '.github.io/' + cfg.repo + '/';
+  $('siteLink').href = 'https://' + cfg.owner + '.github.io/' + cfg.repo + '/';
+  renderCats();
+}
+
+function renderCats(){
+  var host = $('catList');
+  host.innerHTML = '';
+  (data.categories || []).forEach(function(cat, ci){
+    var block = document.createElement('div');
+    block.className = 'cat-block' + (openCats[cat.id] ? ' open' : '');
+
+    var itemsHtml = '';
+    (cat.items || []).forEach(function(item, ii){
+      itemsHtml +=
+      '<div class="item-row">' +
+        '<img class="item-thumb" src="' + esc(imgSrc(item.image)) + '" alt="">' +
+        '<div class="item-meta">' +
+          '<div class="nm">' + esc(item.name) + '</div>' +
+          '<div class="pr">' + fmtPrice(item.price) + ' تومان</div>' +
+        '</div>' +
+        '<div class="item-btns">' +
+          '<div class="row-h">' +
+            '<button class="btn-icon" data-act="item-up" data-c="'+ci+'" data-i="'+ii+'" title="بالا">↑</button>' +
+            '<button class="btn-icon" data-act="item-down" data-c="'+ci+'" data-i="'+ii+'" title="پایین">↓</button>' +
+          '</div>' +
+          '<div class="row-h">' +
+            '<button class="btn-icon" data-act="item-edit" data-c="'+ci+'" data-i="'+ii+'" title="ویرایش">✎</button>' +
+            '<button class="btn-icon" data-act="item-del" data-c="'+ci+'" data-i="'+ii+'" title="حذف" style="color:var(--danger)">✕</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    });
+    if(!(cat.items||[]).length){
+      itemsHtml = '<p class="hint" style="text-align:center;padding:6px 0 14px">این دسته هنوز آیتمی ندارد.</p>';
+    }
+
+    block.innerHTML =
+      '<div class="cat-head" data-act="cat-toggle" data-c="'+ci+'">' +
+        '<span class="chev">◀</span>' +
+        '<span class="cat-title">' + esc(cat.title) + '</span>' +
+        '<span class="count">' + toFa((cat.items||[]).length) + ' آیتم</span>' +
+      '</div>' +
+      '<div class="cat-body">' +
+        '<div class="cat-actions">' +
+          '<button class="btn-ghost btn-small" data-act="item-add" data-c="'+ci+'">＋ آیتم جدید</button>' +
+          '<button class="btn-ghost btn-small" data-act="cat-rename" data-c="'+ci+'">تغییر نام</button>' +
+          '<button class="btn-icon" data-act="cat-up" data-c="'+ci+'" title="بالا">↑</button>' +
+          '<button class="btn-icon" data-act="cat-down" data-c="'+ci+'" title="پایین">↓</button>' +
+          '<button class="btn-danger-ghost" data-act="cat-del" data-c="'+ci+'">حذف دسته</button>' +
+        '</div>' +
+        itemsHtml +
+      '</div>';
+
+    host.appendChild(block);
+  });
+}
+
+/* ============ item editor ============ */
+var editCtx = null; /* {ci, ii or -1 for new} */
+var pickedImage = null; /* {b64, preview} */
+
+function openItemEditor(ci, ii){
+  editCtx = { ci: ci, ii: ii };
+  pickedImage = null;
+  var cat = data.categories[ci];
+  $('itemModalCat').textContent = 'دسته: ' + cat.title;
+  if(ii >= 0){
+    var it = cat.items[ii];
+    $('itemModalTitle').textContent = 'ویرایش آیتم';
+    $('edName').value = it.name;
+    $('edPrice').value = it.price;
+    $('edImg').src = imgSrc(it.image);
+  } else {
+    $('itemModalTitle').textContent = 'آیتم جدید';
+    $('edName').value = '';
+    $('edPrice').value = '';
+    $('edImg').src = '';
+  }
+  updatePricePreview();
+  $('itemModal').classList.add('show');
+}
+function updatePricePreview(){
+  var p = parsePrice($('edPrice').value);
+  $('edPricePreview').textContent = p ? ('نمایش در منو: ' + fmtPrice(p) + ' تومان') : '';
+}
+$('edPrice').addEventListener('input', updatePricePreview);
+
+$('btnPickImg').addEventListener('click', function(){ $('fileImg').click(); });
+$('fileImg').addEventListener('change', function(){
+  var f = this.files[0];
+  this.value = '';
+  if(!f) return;
+  busy(true, 'فشرده‌سازی عکس...');
+  compressImage(f).then(function(res){
+    pickedImage = res;
+    $('edImg').src = res.preview;
+    busy(false);
+  }).catch(function(){
+    busy(false);
+    toast('خواندن عکس ممکن نشد، فرمت دیگری امتحان کن', 'err');
+  });
+});
+
+$('btnItemOk').addEventListener('click', function(){
+  var name = $('edName').value.trim();
+  var price = parsePrice($('edPrice').value);
+  if(!name){ toast('نام آیتم را وارد کن', 'err'); return; }
+  if(!price){ toast('قیمت را وارد کن', 'err'); return; }
+
+  var cat = data.categories[editCtx.ci];
+  var item;
+  if(editCtx.ii >= 0){ item = cat.items[editCtx.ii]; }
+  else {
+    item = { id: uid('it'), name:'', price:0, image:'' };
+    cat.items = cat.items || [];
+    cat.items.push(item);
+  }
+  item.name = name;
+  item.price = price;
+
+  if(pickedImage){
+    var path = 'images/' + uid('img') + '.jpg';
+    pendingImages[path] = pickedImage;
+    item.image = path;
+  }
+  if(editCtx.ii < 0 && !item.image){
+    toast('برای آیتم جدید حتماً یک عکس انتخاب کن', 'err');
+    cat.items.pop();
+    return;
+  }
+
+  $('itemModal').classList.remove('show');
+  setDirty(true);
+  renderCats();
+});
+$('btnItemCancel').addEventListener('click', function(){ $('itemModal').classList.remove('show'); });
+
+/* ============ category editor ============ */
+var catCtx = null; /* index or -1 */
+function openCatEditor(ci){
+  catCtx = ci;
+  $('catModalTitle').textContent = ci >= 0 ? 'تغییر نام دسته' : 'دسته جدید';
+  $('edCatName').value = ci >= 0 ? data.categories[ci].title : '';
+  $('catModal').classList.add('show');
+}
+$('btnCatOk').addEventListener('click', function(){
+  var name = $('edCatName').value.trim();
+  if(!name){ toast('نام دسته را وارد کن', 'err'); return; }
+  if(catCtx >= 0){
+    data.categories[catCtx].title = name;
+  } else {
+    var id = uid('cat');
+    data.categories.push({ id: id, title: name, items: [] });
+    openCats[id] = true;
+  }
+  $('catModal').classList.remove('show');
+  setDirty(true);
+  renderCats();
+});
+$('btnCatCancel').addEventListener('click', function(){ $('catModal').classList.remove('show'); });
+
+/* ============ list actions (delegated) ============ */
+$('catList').addEventListener('click', function(e){
+  var btn = e.target.closest('[data-act]');
+  if(!btn) return;
+  var act = btn.getAttribute('data-act');
+  var ci = parseInt(btn.getAttribute('data-c'), 10);
+  var ii = btn.hasAttribute('data-i') ? parseInt(btn.getAttribute('data-i'),10) : -1;
+  var cats = data.categories;
+
+  if(act === 'cat-toggle'){
+    var id = cats[ci].id;
+    openCats[id] = !openCats[id];
+    renderCats();
+  }
+  else if(act === 'cat-rename'){ openCatEditor(ci); }
+  else if(act === 'cat-del'){
+    var c = cats[ci];
+    var msg = (c.items && c.items.length)
+      ? 'دسته «' + c.title + '» به همراه ' + toFa(c.items.length) + ' آیتم داخلش حذف شود؟'
+      : 'دسته «' + c.title + '» حذف شود؟';
+    if(confirm(msg)){ cats.splice(ci,1); setDirty(true); renderCats(); }
+  }
+  else if(act === 'cat-up' && ci > 0){
+    cats.splice(ci-1, 0, cats.splice(ci,1)[0]); setDirty(true); renderCats();
+  }
+  else if(act === 'cat-down' && ci < cats.length-1){
+    cats.splice(ci+1, 0, cats.splice(ci,1)[0]); setDirty(true); renderCats();
+  }
+  else if(act === 'item-add'){ openItemEditor(ci, -1); }
+  else if(act === 'item-edit'){ openItemEditor(ci, ii); }
+  else if(act === 'item-del'){
+    var it = cats[ci].items[ii];
+    if(confirm('آیتم «' + it.name + '» حذف شود؟')){
+      cats[ci].items.splice(ii,1); setDirty(true); renderCats();
+    }
+  }
+  else if(act === 'item-up' && ii > 0){
+    var arr = cats[ci].items;
+    arr.splice(ii-1, 0, arr.splice(ii,1)[0]); setDirty(true); renderCats();
+  }
+  else if(act === 'item-down'){
+    var arr2 = cats[ci].items;
+    if(ii < arr2.length-1){
+      arr2.splice(ii+1, 0, arr2.splice(ii,1)[0]); setDirty(true); renderCats();
+    }
+  }
+});
+
+/* ============ brand settings ============ */
+$('brandToggle').addEventListener('click', function(){
+  var b = $('brandBody');
+  b.style.display = b.style.display === 'none' ? 'block' : 'none';
+});
+['setBrand','setTagline','setFooter','setCurrency'].forEach(function(id){
+  $(id).addEventListener('input', function(){
+    data.settings.brandName = $('setBrand').value;
+    data.settings.tagline = $('setTagline').value;
+    data.settings.footer = $('setFooter').value;
+    data.settings.currency = $('setCurrency').value;
+    setDirty(true);
+  });
+});
+
+/* ============ setup / connect ============ */
+function showScreen(name){
+  $('scrSetup').classList.toggle('on', name === 'setup');
+  $('scrMain').classList.toggle('on', name === 'main');
+  $('saveBar').style.display = name === 'main' ? 'flex' : 'none';
+  $('btnSettingsTop').style.display = name === 'main' ? 'inline-flex' : 'none';
+}
+
+$('btnConnect').addEventListener('click', function(){
+  var owner = $('inpOwner').value.trim();
+  var repo = $('inpRepo').value.trim();
+  var token = $('inpToken').value.trim();
+  if(!owner || !repo || !token){
+    $('setupMsg').textContent = 'هر سه فیلد را پر کن.';
+    return;
+  }
+  cfg = { owner: owner, repo: repo, token: token, branch: 'main' };
+  $('setupMsg').textContent = 'در حال بررسی اتصال...';
+  loadData().then(function(){
+    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+    showScreen('main');
+    toast('اتصال برقرار شد ✓', 'ok');
+  }).catch(function(err){
+    busy(false);
+    if(err.message === 'AUTH') $('setupMsg').textContent = 'کلید دسترسی اشتباه است یا منقضی شده.';
+    else if(err.message === 'NOTFOUND') $('setupMsg').textContent = 'مخزن پیدا نشد. نام کاربری و نام مخزن را دوباره چک کن، و مطمئن شو کلید به این مخزن دسترسی دارد.';
+    else $('setupMsg').textContent = 'خطا: ' + err.message;
+  });
+});
+
+$('btnSettingsTop').addEventListener('click', function(){
+  if(dirty && !confirm('تغییرات ذخیره‌نشده داری. بدون ذخیره به صفحه اتصال بروی؟')) return;
+  showScreen('setup');
+});
+$('btnLogout').addEventListener('click', function(){
+  if(!confirm('اتصال پاک شود؟ (برای ورود دوباره باید کلید را وارد کنی)')) return;
+  localStorage.removeItem(CFG_KEY);
+  cfg = null; data = null;
+  $('inpToken').value = '';
+  showScreen('setup');
+});
+$('btnReload').addEventListener('click', function(){
+  if(dirty && !confirm('تغییرات ذخیره‌نشده از بین می‌رود. ادامه؟')) return;
+  loadData().catch(function(err){ busy(false); toast('خطا در بارگذاری: ' + err.message, 'err'); });
+});
+$('btnSave').addEventListener('click', saveAll);
+
+window.addEventListener('beforeunload', function(e){
+  if(dirty){ e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ============ boot ============ */
+var saved = localStorage.getItem(CFG_KEY);
+if(saved){
+  try{ cfg = JSON.parse(saved); }catch(e){ cfg = null; }
+}
+if(cfg && cfg.token){
+  $('inpOwner').value = cfg.owner || '';
+  $('inpRepo').value = cfg.repo || '';
+  $('inpToken').value = cfg.token || '';
+  loadData().then(function(){ showScreen('main'); })
+    .catch(function(){ busy(false); showScreen('setup'); });
+} else {
+  showScreen('setup');
+}
+
+})();
+</script>
+</body>
+</html>
