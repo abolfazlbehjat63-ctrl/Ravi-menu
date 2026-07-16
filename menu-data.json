@@ -10,10 +10,30 @@
       "id": "coffee",
       "title": "قهوه سرد",
       "items": [
-        { "id": "it-001", "name": "آیس آمریکانو", "price": 200000, "image": "images/ice-americano.jpg" },
-        { "id": "it-002", "name": "آیس موکا", "price": 200000, "image": "images/ice-mocha.jpg" },
-        { "id": "it-003", "name": "آیس کارامل ماکیاتو", "price": 200000, "image": "images/ice-caramel-macchiato.jpg" },
-        { "id": "it-004", "name": "آیس لته", "price": 200000, "image": "images/ice-latte.jpg" }
+        {
+          "id": "it-001",
+          "name": "آیس آمریکانو",
+          "price": 200000,
+          "image": "images/img-mrn3qlgu3t3g.jpg"
+        },
+        {
+          "id": "it-002",
+          "name": "آیس موکا",
+          "price": 200000,
+          "image": "images/ice-mocha.jpg"
+        },
+        {
+          "id": "it-003",
+          "name": "آیس کارامل ماکیاتو",
+          "price": 200000,
+          "image": "images/ice-caramel-macchiato.jpg"
+        },
+        {
+          "id": "it-004",
+          "name": "آیس لته",
+          "price": 200000,
+          "image": "images/ice-latte.jpg"
+        }
       ]
     },
     {
@@ -35,21 +55,66 @@
       "id": "diet",
       "title": "رژیمی",
       "items": [
-        { "id": "it-005", "name": "کوکی کنجد و ارده (رژیمی)", "price": 266000, "image": "images/sesame-tahini-cookie.jpg" },
-        { "id": "it-006", "name": "کوکی کینوا (رژیمی)", "price": 220000, "image": "images/quinoa-cookie.jpg" },
-        { "id": "it-007", "name": "کوکی بار (رژیمی)", "price": 220000, "image": "images/cookie-bar.jpg" },
-        { "id": "it-008", "name": "پروتین بار (رژیمی)", "price": 295305, "image": "images/protein-bar.jpg" },
-        { "id": "it-009", "name": "کرانچ راوی (رژیمی)", "price": 308000, "image": "images/ravi-crunch.jpg" },
-        { "id": "it-010", "name": "لوف پستو تخم مرغ (رژیمی)", "price": 363000, "image": "images/pesto-egg-loaf.jpg" }
+        {
+          "id": "it-005",
+          "name": "کوکی کنجد و ارده (رژیمی)",
+          "price": 266000,
+          "image": "images/sesame-tahini-cookie.jpg"
+        },
+        {
+          "id": "it-006",
+          "name": "کوکی کینوا (رژیمی)",
+          "price": 220000,
+          "image": "images/quinoa-cookie.jpg"
+        },
+        {
+          "id": "it-007",
+          "name": "کوکی بار (رژیمی)",
+          "price": 220000,
+          "image": "images/cookie-bar.jpg"
+        },
+        {
+          "id": "it-008",
+          "name": "پروتین بار (رژیمی)",
+          "price": 295305,
+          "image": "images/protein-bar.jpg"
+        },
+        {
+          "id": "it-009",
+          "name": "کرانچ راوی (رژیمی)",
+          "price": 308000,
+          "image": "images/ravi-crunch.jpg"
+        },
+        {
+          "id": "it-010",
+          "name": "لوف پستو تخم مرغ (رژیمی)",
+          "price": 363000,
+          "image": "images/pesto-egg-loaf.jpg"
+        }
       ]
     },
     {
       "id": "dough",
       "title": "خمیر هزارلا",
       "items": [
-        { "id": "it-011", "name": "رول دارچین", "price": 193600, "image": "images/cinnamon-roll.jpg" },
-        { "id": "it-012", "name": "کروسان شکلاتی", "price": 314000, "image": "images/chocolate-croissant.jpg" },
-        { "id": "it-013", "name": "پن سوییس", "price": 435000, "image": "images/pain-suisse.jpg" }
+        {
+          "id": "it-011",
+          "name": "رول دارچین",
+          "price": 193600,
+          "image": "images/cinnamon-roll.jpg"
+        },
+        {
+          "id": "it-012",
+          "name": "کروسان شکلاتی",
+          "price": 314000,
+          "image": "images/chocolate-croissant.jpg"
+        },
+        {
+          "id": "it-013",
+          "name": "پن سوییس",
+          "price": 435000,
+          "image": "images/pain-suisse.jpg"
+        }
       ]
     },
     {
@@ -66,7 +131,12 @@
       "id": "cookies",
       "title": "کوکی‌ها",
       "items": [
-        { "id": "it-014", "name": "کوکی شکلات و فندق", "price": 273000, "image": "images/choco-hazelnut-cookie.jpg" }
+        {
+          "id": "it-014",
+          "name": "کوکی شکلات و فندق",
+          "price": 273000,
+          "image": "images/choco-hazelnut-cookie.jpg"
+        }
       ]
     }
   ]
